@@ -1,6 +1,6 @@
 [1.0.0] - 2026-01-06
 - Tác giả: thung65
 - ID Addon: plugin.video.fpttv
-- Tên hiển thị: FPT PLAY
+- Tên hiển thị: HieuHienTV
 - Hỗ trợ Kodi 19 trên Android 10.
 - Tính năng: Bấm phát ngay, hỗ trợ SSL bypass.
