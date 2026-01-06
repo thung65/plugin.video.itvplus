@@ -1,0 +1,24 @@
+# Bản dịch tiếng Việt cho Hiếu Hiền TV Remake
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#30001"
+msgid "TỔNG HỢP - ALL CHANNELS"
+msgstr "TỔNG HỢP - ALL CHANNELS"
+
+msgctxt "#30002"
+msgid "FPT IPTV (Chỉ dùng cho mạng FPT)"
+msgstr "FPT IPTV (Chỉ dùng cho mạng FPT)"
+
+msgctxt "#30003"
+msgid "RADIO - INTERNATIONAL"
+msgstr "RADIO - INTERNATIONAL"
+
+msgctxt "#30004"
+msgid "Đang tải dữ liệu, vui lòng chờ..."
+msgstr "Đang tải dữ liệu, vui lòng chờ..."
