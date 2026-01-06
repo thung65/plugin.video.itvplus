@@ -1,38 +1,66 @@
-import sys, re, urllib.request, xbmcgui, xbmcplugin, xbmc, ssl
+import xbmcgui
+import xbmcplugin
+import sys
+import urllib.request
+import re
 
-# Link nguồn từ GitHub của thung65
-M3U_URL = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt"
+# --- CẤU HÌNH LINK ẢNH TỪ GITHUB ---
+ICON_TV = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/tv.png"
+ICON_FPT = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt.png"
+ICON_RADIO = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/radio.png"
 
-def list_channels():
-    handle = int(sys.argv[1])
+# --- NGUỒN DỮ LIỆU ---
+SOURCES = {
+    "ALL": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/ducnt123",
+    "FPT": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt",
+    "RADIO": "https://raw.githubusercontent.com/luongtamlong/DAKLAK_RADIO/refs/heads/main/RadioVietNam.m3u"
+}
+
+handle = int(sys.argv[1])
+
+def get_content(url):
+    xbmcplugin.setContent(handle, 'videos')
     try:
-        # Bỏ qua lỗi SSL trên Android 10
-        context = ssl._create_unverified_context()
-        req = urllib.request.Request(M3U_URL, headers={'User-Agent': 'Mozilla/5.0'})
-        response = urllib.request.urlopen(req, context=context)
-        data = response.read().decode('utf-8')
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        content = urllib.request.urlopen(req).read().decode('utf-8')
+        matches = re.findall(r'#EXTINF:.*?(?:tvg-logo="(.*?)")?.*?,(.*?)\n(http.*?)$', content, re.MULTILINE)
         
-        # Tìm logo, tên kênh và link
-        matches = re.findall(r'#EXTINF:.*?(?:tvg-logo="(.*?)")?.*?,(.*?)\n(http.*)', data)
-        
-        for logo, name, url in matches:
-            name = name.strip()
-            url = url.strip()
-            
-            list_item = xbmcgui.ListItem(label=name)
-            list_item.setInfo('video', {'title': name, 'mediatype': 'video'})
-            
-            if logo:
-                list_item.setArt({'thumb': logo.strip(), 'icon': logo.strip()})
-            
-            # Cài đặt để bấm là phát ngay
-            list_item.setProperty('IsPlayable', 'true')
-            xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=list_item, isFolder=False)
-            
-    except Exception as e:
-        xbmc.log(f"Loi tai list: {str(e)}", xbmc.LOGERROR)
-        
-    xbmcplugin.endOfDirectory(handle)
+        for logo, name, link in matches:
+            li = xbmcgui.ListItem(label="[B]" + name.strip() + "[/B]")
+            img = logo if logo else "DefaultVideo.png"
+            li.setArt({'icon': img, 'thumb': img})
+            li.setInfo('video', {'title': name.strip()})
+            li.setProperty('IsPlayable', 'true')
+            xbmcplugin.addDirectoryItem(handle=handle, url=link.strip(), listitem=li, isFolder=False)
+    except:
+        xbmcgui.Dialog().notification("Lỗi", "Không thể tải danh sách kênh", xbmcgui.NOTIFICATION_ERROR)
 
-if __name__ == '__main__':
-    list_channels()
+def build_menu():
+    xbmcplugin.setContent(handle, 'files')
+
+    # 1. Kênh tổng hợp (Mục All luôn ở đầu)
+    item_all = xbmcgui.ListItem(label="[B][COLOR orange]Kênh tổng hợp[/COLOR][/B]")
+    item_all.setArt({'icon': ICON_TV, 'thumb': ICON_TV})
+    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=all", item_all, True)
+
+    # 2. Kênh truyền hình FPT (Kèm cảnh báo mạng FPT)
+    label_fpt = "[B][COLOR lightblue]Kênh truyền hình FPT[/COLOR] [COLOR red](Chỉ dùng cho mạng FPT)[/COLOR][/B]"
+    item_fpt = xbmcgui.ListItem(label=label_fpt)
+    item_fpt.setArt({'icon': ICON_FPT, 'thumb': ICON_FPT})
+    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=fpt", item_fpt, True)
+
+    # 3. Radio_FM (Mục International đặt ở cuối)
+    item_radio = xbmcgui.ListItem(label="[B][COLOR lightgreen]Radio_FM[/COLOR][/B]")
+    item_radio.setArt({'icon': ICON_RADIO, 'thumb': ICON_RADIO})
+    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=radio", item_radio, True)
+
+# ĐIỀU HƯỚNG
+params = sys.argv[2]
+if not params:
+    build_menu()
+else:
+    if "?mode=all" in params: get_content(SOURCES["ALL"])
+    if "?mode=fpt" in params: get_content(SOURCES["FPT"])
+    if "?mode=radio" in params: get_content(SOURCES["RADIO"])
+
+xbmcplugin.endOfDirectory(handle)
