@@ -1,1 +1,1 @@
-# plugin.video.itvplus
+# plugin.video.fpttv
