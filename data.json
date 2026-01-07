@@ -8,12 +8,12 @@
   {
     "name": "FPT IPTV",
     "url": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt",
-    "icon": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt.png",
+    "icon": "special://home/addons/plugin.video.hieuhientv.remake/resources/fpt_icon.png",
     "color": "lightblue",
-    "note": "(Chỉ dùng cho mạng FPT)"
+    "note": "30004"
   },
   {
-    "name": "RADIO - QUỐC TẾ",
+    "name": "RADIO - INTERNATIONAL",
     "url": "https://raw.githubusercontent.com/luongtamlong/DAKLAK_RADIO/refs/heads/main/RadioVietNam.m3u",
     "icon": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/radio.png",
     "color": "lightgreen"
