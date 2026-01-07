@@ -4,63 +4,53 @@ import sys
 import urllib.request
 import re
 
-# --- CẤU HÌNH LINK ẢNH TỪ GITHUB ---
-ICON_TV = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/tv.png"
-ICON_FPT = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt.png"
-ICON_RADIO = "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/radio.png"
+# Lấy handle của addon
+HANDLE = int(sys.argv[1])
 
-# --- NGUỒN DỮ LIỆU ---
-SOURCES = {
-    "ALL": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/ducnt123",
-    "FPT": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt",
-    "RADIO": "https://raw.githubusercontent.com/luongtamlong/DAKLAK_RADIO/refs/heads/main/RadioVietNam.m3u"
-}
+# --- DANH SÁCH MỤC (Thêm thoải mái vào đây) ---
+# Thứ tự: "Tên": ["Link M3U", "Link Ảnh", "Màu chữ"]
+MENU_DATA = [
+    ["TỔNG HỢP - ALL", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/ducnt123", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/tv.png", "orange"],
+    ["FPT IPTV (Chỉ mạng FPT)", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt.png", "lightblue"],
+    # Bạn có thể copy dòng dưới để thêm 100 mục phim nữa nếu muốn
+    ["KHO PHIM HÀNH ĐỘNG", "https://link-m3u-phim-le", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/tv.png", "yellow"],
+    ["RADIO - INTERNATIONAL", "https://raw.githubusercontent.com/luongtamlong/DAKLAK_RADIO/refs/heads/main/RadioVietNam.m3u", "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/radio.png", "lightgreen"]
+]
 
-handle = int(sys.argv[1])
-
-def get_content(url):
-    xbmcplugin.setContent(handle, 'videos')
+def get_content(url, color):
+    xbmcplugin.setContent(HANDLE, 'videos')
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        content = urllib.request.urlopen(req).read().decode('utf-8')
-        matches = re.findall(r'#EXTINF:.*?(?:tvg-logo="(.*?)")?.*?,(.*?)\n(http.*?)$', content, re.MULTILINE)
+        with urllib.request.urlopen(req) as response:
+            content = response.read().decode('utf-8')
         
+        matches = re.findall(r'#EXTINF:.*?(?:tvg-logo="(.*?)")?.*?,(.*?)\n(http.*?)$', content, re.MULTILINE)
         for logo, name, link in matches:
-            li = xbmcgui.ListItem(label="[B]" + name.strip() + "[/B]")
-            img = logo if logo else "DefaultVideo.png"
+            li = xbmcgui.ListItem(label=f"[COLOR {color}]{name.strip()}[/COLOR]")
+            img = logo if (logo and logo.startswith('http')) else "DefaultVideo.png"
             li.setArt({'icon': img, 'thumb': img})
             li.setInfo('video', {'title': name.strip()})
             li.setProperty('IsPlayable', 'true')
-            xbmcplugin.addDirectoryItem(handle=handle, url=link.strip(), listitem=li, isFolder=False)
+            xbmcplugin.addDirectoryItem(HANDLE, link.strip(), li, False)
     except:
-        xbmcgui.Dialog().notification("Lỗi", "Không thể tải danh sách kênh", xbmcgui.NOTIFICATION_ERROR)
+        xbmcgui.Dialog().notification("Lỗi", "Không tải được danh sách", xbmcgui.NOTIFICATION_ERROR)
 
 def build_menu():
-    xbmcplugin.setContent(handle, 'files')
+    xbmcplugin.setContent(HANDLE, 'folders')
+    for name, url_m3u, icon, color in MENU_DATA:
+        li = xbmcgui.ListItem(label=f"[B][COLOR {color}]{name}[/COLOR][/B]")
+        li.setArt({'icon': icon, 'thumb': icon})
+        # Tạo link điều hướng trong addon
+        path = f"{sys.argv[0]}?url={url_m3u}&color={color}"
+        xbmcplugin.addDirectoryItem(HANDLE, path, li, True)
 
-    # 1. Kênh tổng hợp (Mục All luôn ở đầu)
-    item_all = xbmcgui.ListItem(label="[B][COLOR orange]Kênh tổng hợp[/COLOR][/B]")
-    item_all.setArt({'icon': ICON_TV, 'thumb': ICON_TV})
-    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=all", item_all, True)
+# Xử lý tham số truyền vào
+import urllib.parse
+params = dict(urllib.parse.parse_qsl(sys.argv[2][1:]))
 
-    # 2. Kênh truyền hình FPT (Kèm cảnh báo mạng FPT)
-    label_fpt = "[B][COLOR lightblue]Kênh truyền hình FPT[/COLOR] [COLOR red](Chỉ dùng cho mạng FPT)[/COLOR][/B]"
-    item_fpt = xbmcgui.ListItem(label=label_fpt)
-    item_fpt.setArt({'icon': ICON_FPT, 'thumb': ICON_FPT})
-    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=fpt", item_fpt, True)
-
-    # 3. Radio_FM (Mục International đặt ở cuối)
-    item_radio = xbmcgui.ListItem(label="[B][COLOR lightgreen]Radio_FM[/COLOR][/B]")
-    item_radio.setArt({'icon': ICON_RADIO, 'thumb': ICON_RADIO})
-    xbmcplugin.addDirectoryItem(handle, sys.argv[0] + "?mode=radio", item_radio, True)
-
-# ĐIỀU HƯỚNG
-params = sys.argv[2]
 if not params:
     build_menu()
 else:
-    if "?mode=all" in params: get_content(SOURCES["ALL"])
-    if "?mode=fpt" in params: get_content(SOURCES["FPT"])
-    if "?mode=radio" in params: get_content(SOURCES["RADIO"])
+    get_content(params.get('url'), params.get('color'))
 
-xbmcplugin.endOfDirectory(handle)
+xbmcplugin.endOfDirectory(HANDLE)
