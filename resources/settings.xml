@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings version="1">
+    <section id="plugin.video.fpttv">
+        <category label="Cấu hình hệ thống">
+            <group>
+                <setting id="data_url" type="string" label="Link dữ liệu (JSON)">
+                    <level>0</level>
+                    <default>https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/data.json</default>
+                </setting>
+                
+                <setting id="show_notif" type="boolean" label="Hiển thị thông báo khi mở">
+                    <level>0</level>
+                    <default>true</default>
+                </setting>
+            </group>
+        </category>
+    </section>
+</settings>
