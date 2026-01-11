@@ -1,21 +1,4 @@
 [
   {
-    "name": "Kênh Tổng Hợp",
-    "url": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/ducnt123",
-    "icon": "https://icones.pro/wp-content/uploads/2021/05/icone-tv-television-grise.png",
-    "color": "white"
-  },
-  {
-    "name": "Kênh IPTV mạng FPT",
-    "url": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt",
-    "icon": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/IMG_20260107_185015.png",
-    "color": "white",
-    "note": "30004"
-  },
-  {
-    "name": "RADIO - FM",
-    "url": "https://raw.githubusercontent.com/luongtamlong/DAKLAK_RADIO/refs/heads/main/RadioVietNam.m3u",
-    "icon": "https://cdn-icons-png.flaticon.com/512/4345/4345664.png",
-    "color": "white"
-  }
-]
+    "url": "https://raw.githubusercontent.com/thung65/Iptv-vietnam/refs/heads/main/fpt"
+  }"
